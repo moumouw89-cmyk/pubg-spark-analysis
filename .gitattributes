@@ -1,0 +1,5 @@
+* text=auto
+
+# Keep the 50MB experiment dataset out of text diffs
+*.csv -diff -merge
+*.png binary

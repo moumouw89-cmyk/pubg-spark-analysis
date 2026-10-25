@@ -2,6 +2,8 @@
 
 基于 **PySpark** 对约 **37 万条** PUBG 玩家比赛记录做探索性分析、特征工程与排名百分位预测，并用 **Flask + ECharts** 搭建交互式数据看板。
 
+> 仓库已包含实验数据 `data/smaller_train.csv`（约 50MB），克隆后可直接复现分析与模型。
+
 ![数据看板](docs/dashboard.png)
 
 ## 一句话介绍（简历版）
@@ -49,7 +51,7 @@ PUBG/
 │  └─ templates/
 │     └─ index.html        # ECharts 数据看板
 ├─ outputs/                # 预计算 JSON（提交到仓库）
-├─ data/                   # 数据目录（CSV 不提交）
+├─ data/                   # 实验数据（约50MB，已提交）
 ├─ docs/                   # README 截图
 ├─ models/                 # Spark 模型输出（运行时生成，不提交）
 ├─ requirements.txt
@@ -82,7 +84,7 @@ python web/app.py
 ```powershell
 pip install -r requirements.txt
 
-# 将 Kaggle 数据放到 data/smaller_train.csv
+# 仓库已包含 data/smaller_train.csv，可直接运行
 python src/analysis.py
 python src/train_model.py
 python web/app.py
@@ -108,9 +110,11 @@ python src/train_model.py
 
 ## 数据
 
-数据来自 Kaggle 竞赛 [PUBG Finish Placement Prediction](https://www.kaggle.com/c/pubg-finish-placement-prediction/data)。
+实验数据来自 Kaggle 竞赛 [PUBG Finish Placement Prediction](https://www.kaggle.com/c/pubg-finish-placement-prediction/data)。
 
-仓库**不包含** 50MB 的原始 CSV，避免把数据文件写进 Git 历史。字段说明和下载方式见 [`data/README.md`](data/README.md)。
+仓库已包含实验使用的 `data/smaller_train.csv`（约 50MB，37 万行），克隆后可以直接运行分析和训练。字段说明见 [`data/README.md`](data/README.md)。
+
+> 如果只想替换成自己的数据，设置 `PUBG_DATA_PATH` 即可，不需要改代码。数据使用请遵循 Kaggle 竞赛的数据条款。
 
 ## 技术栈
 

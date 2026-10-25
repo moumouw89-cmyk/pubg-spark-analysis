@@ -10,8 +10,9 @@ __pycache__/
 venv/
 .pytest_cache/
 
-# Data: keep the folder and instructions, not the 50MB CSV
+# Data: include the experiment CSV, exclude other large archives
 data/*.csv
+!data/smaller_train.csv
 data/*.zip
 data/*.rar
 
