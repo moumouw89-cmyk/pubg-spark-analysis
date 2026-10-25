@@ -1,0 +1,422 @@
+{
+  "kills": {
+    "avg": 0.9227807146076027,
+    "max": 56,
+    "p99": 7,
+    "distribution": [
+      {
+        "kills": 0,
+        "count": 210887
+      },
+      {
+        "kills": 1,
+        "count": 77390
+      },
+      {
+        "kills": 2,
+        "count": 39405
+      },
+      {
+        "kills": 3,
+        "count": 19297
+      },
+      {
+        "kills": 4,
+        "count": 10413
+      },
+      {
+        "kills": 5,
+        "count": 5503
+      },
+      {
+        "kills": 6,
+        "count": 3169
+      },
+      {
+        "kills": 7,
+        "count": 1796
+      }
+    ]
+  },
+  "zero_kills_damage": {
+    "count": 210887,
+    "ratio": 56.91,
+    "distribution": [
+      {
+        "range": "0伤害",
+        "count": 102980
+      },
+      {
+        "range": "1-50",
+        "count": 39563
+      },
+      {
+        "range": "51-100",
+        "count": 43672
+      },
+      {
+        "range": "101-200",
+        "count": 20082
+      },
+      {
+        "range": "200+",
+        "count": 4590
+      }
+    ]
+  },
+  "walk_distance": {
+    "avg": 1153.7,
+    "p99": 4400.0,
+    "max": 14250.0,
+    "distribution": [
+      {
+        "range": "0m",
+        "count": 8417
+      },
+      {
+        "range": "1-500m",
+        "count": 157390
+      },
+      {
+        "range": "501-1000m",
+        "count": 44469
+      },
+      {
+        "range": "1001-2000m",
+        "count": 69467
+      },
+      {
+        "range": "2001-3000m",
+        "count": 57727
+      },
+      {
+        "range": "3000m+",
+        "count": 29396
+      }
+    ]
+  },
+  "ride_distance": {
+    "avg": 606.6,
+    "p99": 6997.0,
+    "max": 27410.0,
+    "zero_pct": 74.43,
+    "distribution": [
+      {
+        "range": "0m",
+        "count": 275812
+      },
+      {
+        "range": "1-500m",
+        "count": 17332
+      },
+      {
+        "range": "501-2000m",
+        "count": 34428
+      },
+      {
+        "range": "2001-5000m",
+        "count": 31498
+      },
+      {
+        "range": "5000m+",
+        "count": 7795
+      }
+    ]
+  },
+  "items_winrate": {
+    "avg_heal": 1.4,
+    "avg_boost": 1.1,
+    "heal_win": [
+      {
+        "count": 0,
+        "win_rate": 0.332
+      },
+      {
+        "count": 1,
+        "win_rate": 0.5906
+      },
+      {
+        "count": 2,
+        "win_rate": 0.6985
+      },
+      {
+        "count": 3,
+        "win_rate": 0.723
+      },
+      {
+        "count": 4,
+        "win_rate": 0.7235
+      },
+      {
+        "count": 5,
+        "win_rate": 0.6681
+      },
+      {
+        "count": 6,
+        "win_rate": 0.722
+      },
+      {
+        "count": 7,
+        "win_rate": 0.739
+      },
+      {
+        "count": 8,
+        "win_rate": 0.7631
+      },
+      {
+        "count": 9,
+        "win_rate": 0.7691
+      },
+      {
+        "count": 10,
+        "win_rate": 0.7474
+      },
+      {
+        "count": 11,
+        "win_rate": 0.7834
+      }
+    ],
+    "boost_win": [
+      {
+        "count": 0,
+        "win_rate": 0.3013
+      },
+      {
+        "count": 1,
+        "win_rate": 0.5585
+      },
+      {
+        "count": 2,
+        "win_rate": 0.6819
+      },
+      {
+        "count": 3,
+        "win_rate": 0.7751
+      },
+      {
+        "count": 4,
+        "win_rate": 0.831
+      },
+      {
+        "count": 5,
+        "win_rate": 0.8682
+      },
+      {
+        "count": 6,
+        "win_rate": 0.897
+      }
+    ]
+  },
+  "game_modes": {
+    "solo": {
+      "count": 59261,
+      "ratio": 16.0,
+      "kill_winrate": [
+        {
+          "kills": 0,
+          "win_rate": 0.3645
+        },
+        {
+          "kills": 1,
+          "win_rate": 0.5476
+        },
+        {
+          "kills": 2,
+          "win_rate": 0.6669
+        },
+        {
+          "kills": 3,
+          "win_rate": 0.7554
+        },
+        {
+          "kills": 4,
+          "win_rate": 0.8271
+        },
+        {
+          "kills": 5,
+          "win_rate": 0.8737
+        },
+        {
+          "kills": 6,
+          "win_rate": 0.9068
+        },
+        {
+          "kills": 7,
+          "win_rate": 0.9256
+        },
+        {
+          "kills": 8,
+          "win_rate": 0.9427
+        },
+        {
+          "kills": 9,
+          "win_rate": 0.9613
+        },
+        {
+          "kills": 10,
+          "win_rate": 0.9638
+        },
+        {
+          "kills": 11,
+          "win_rate": 0.969
+        },
+        {
+          "kills": 12,
+          "win_rate": 0.9811
+        },
+        {
+          "kills": 13,
+          "win_rate": 0.9869
+        },
+        {
+          "kills": 14,
+          "win_rate": 0.992
+        },
+        {
+          "kills": 15,
+          "win_rate": 0.9861
+        }
+      ]
+    },
+    "duo": {
+      "count": 274568,
+      "ratio": 74.1,
+      "kill_winrate": [
+        {
+          "kills": 0,
+          "win_rate": 0.3745
+        },
+        {
+          "kills": 1,
+          "win_rate": 0.5095
+        },
+        {
+          "kills": 2,
+          "win_rate": 0.6093
+        },
+        {
+          "kills": 3,
+          "win_rate": 0.7024
+        },
+        {
+          "kills": 4,
+          "win_rate": 0.7701
+        },
+        {
+          "kills": 5,
+          "win_rate": 0.822
+        },
+        {
+          "kills": 6,
+          "win_rate": 0.8579
+        },
+        {
+          "kills": 7,
+          "win_rate": 0.8839
+        },
+        {
+          "kills": 8,
+          "win_rate": 0.9067
+        },
+        {
+          "kills": 9,
+          "win_rate": 0.9242
+        },
+        {
+          "kills": 10,
+          "win_rate": 0.9327
+        },
+        {
+          "kills": 11,
+          "win_rate": 0.9586
+        },
+        {
+          "kills": 12,
+          "win_rate": 0.9461
+        },
+        {
+          "kills": 13,
+          "win_rate": 0.9533
+        },
+        {
+          "kills": 14,
+          "win_rate": 0.9706
+        },
+        {
+          "kills": 15,
+          "win_rate": 0.9306
+        }
+      ]
+    },
+    "squad": {
+      "count": 36752,
+      "ratio": 9.9,
+      "kill_winrate": [
+        {
+          "kills": 0,
+          "win_rate": 0.347
+        },
+        {
+          "kills": 1,
+          "win_rate": 0.4889
+        },
+        {
+          "kills": 2,
+          "win_rate": 0.5836
+        },
+        {
+          "kills": 3,
+          "win_rate": 0.6732
+        },
+        {
+          "kills": 4,
+          "win_rate": 0.7206
+        },
+        {
+          "kills": 5,
+          "win_rate": 0.7811
+        },
+        {
+          "kills": 6,
+          "win_rate": 0.7841
+        },
+        {
+          "kills": 7,
+          "win_rate": 0.8235
+        },
+        {
+          "kills": 8,
+          "win_rate": 0.7799
+        },
+        {
+          "kills": 9,
+          "win_rate": 0.7368
+        },
+        {
+          "kills": 10,
+          "win_rate": 0.7976
+        },
+        {
+          "kills": 11,
+          "win_rate": 0.7627
+        },
+        {
+          "kills": 12,
+          "win_rate": 0.8097
+        },
+        {
+          "kills": 13,
+          "win_rate": 0.7294
+        },
+        {
+          "kills": 14,
+          "win_rate": 0.6666
+        },
+        {
+          "kills": 15,
+          "win_rate": 0.7456
+        }
+      ]
+    }
+  }
+}

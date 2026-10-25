@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBG游戏数据分析平台</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;background:#0f1923;color:#e0e6ed}
+        .header{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);padding:30px 40px;text-align:center;border-bottom:3px solid #e94560}
+        .header h1{font-size:28px;color:#e94560;margin-bottom:8px;letter-spacing:2px}
+        .header p{color:#8899aa;font-size:14px}
+        .container{max-width:1400px;margin:0 auto;padding:20px}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+        .stat-card{background:#1a2332;border-radius:10px;padding:18px;text-align:center;border:1px solid #2a3a4a;transition:transform .2s}
+        .stat-card:hover{transform:translateY(-2px);border-color:#e94560}
+        .stat-num{font-size:24px;font-weight:bold;color:#e94560}
+        .stat-label{font-size:12px;color:#8899aa;margin-top:4px}
+        .chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:20px;margin-bottom:20px}
+        .chart-card{background:#1a2332;border-radius:10px;padding:20px;border:1px solid #2a3a4a}
+        .chart-card h3{font-size:15px;color:#e94560;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #2a3a4a}
+        .chart-box{width:100%;height:340px}
+        .full-width{grid-column:1/-1}
+        .tab-bar{display:flex;gap:5px;margin-bottom:20px;background:#1a2332;border-radius:10px;padding:5px;border:1px solid #2a3a4a}
+        .tab-btn{padding:10px 20px;border:none;background:transparent;color:#8899aa;cursor:pointer;border-radius:8px;font-size:14px;transition:all .2s}
+        .tab-btn:hover{color:#e0e6ed;background:#2a3a4a}
+        .tab-btn.active{color:#fff;background:#e94560}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+        .prediction-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;padding:20px;background:#1a2332;border-radius:10px;border:1px solid #2a3a4a;margin-bottom:20px}
+        .form-group{display:flex;flex-direction:column}
+        .form-group label{font-size:12px;color:#8899aa;margin-bottom:4px}
+        .form-group input{padding:8px 10px;background:#0f1923;border:1px solid #2a3a4a;border-radius:6px;color:#e0e6ed;font-size:13px}
+        .form-group input:focus{outline:none;border-color:#e94560}
+        .btn-predict{grid-column:1/-1;padding:12px;background:#e94560;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;transition:background .2s}
+        .btn-predict:hover{background:#d63851}
+        .result-box{background:#16213e;border-radius:10px;padding:25px;text-align:center;border:2px solid #0f3460;margin-top:15px}
+        .result-box .big-num{font-size:48px;font-weight:bold;color:#e94560}
+        .result-box .desc{color:#8899aa;margin-top:10px;font-size:14px}
+        .full-chart-box{width:100%;height:480px}
+        .eval-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}
+        .eval-card{background:#0f1923;border-radius:8px;padding:12px;text-align:center;border:1px solid #2a3a4a}
+        .eval-value{font-size:20px;font-weight:bold;color:#e94560}
+        .eval-label{font-size:11px;color:#8899aa;margin-top:3px}
+        .eval-model{font-size:13px;color:#e0e6ed;margin-bottom:4px}
+        .consent{text-align:center;color:#556677;font-size:12px;padding:20px;border-top:1px solid #2a3a4a;margin-top:30px}
+        @media(max-width:640px){.chart-grid{grid-template-columns:1fr}.chart-box{height:260px}.full-chart-box{height:320px}.stats-grid{grid-template-columns:repeat(2,1fr)}}
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>PUBG 绝地求生 · 大数据分析平台</h1>
+    <p>基于 Apache Spark 的玩家行为数据分析 | 厦门大学林子雨团队实验复现</p>
+</div>
+<div class="container">
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('analysis')">📊 数据分析</button>
+        <button class="tab-btn" onclick="switchTab('ml')">🤖 排名预测模型</button>
+        <button class="tab-btn" onclick="switchTab('predict')">🎯 在线估算</button>
+    </div>
+    <div id="tab-analysis" class="tab-content active">
+        <div class="chart-grid">
+            <div class="chart-card"><h3>📊 玩家击杀数分布</h3><div id="chart-kills" class="chart-box"></div></div>
+            <div class="chart-card"><h3>💥 零击杀玩家伤害分布</h3><div id="chart-zero-dmg" class="chart-box"></div></div>
+            <div class="chart-card"><h3>🚶 步行距离分布</h3><div id="chart-walk" class="chart-box"></div></div>
+            <div class="chart-card"><h3>🚗 载具行驶距离分布</h3><div id="chart-ride" class="chart-box"></div></div>
+            <div class="chart-card"><h3>💊 药品/增益物品与胜率关系</h3><div id="chart-items" class="chart-box"></div></div>
+            <div class="chart-card"><h3>👥 三种组队模式击杀-胜率对比</h3><div id="chart-modes" class="chart-box"></div></div>
+        </div>
+    </div>
+    <div id="tab-ml" class="tab-content">
+        <div class="eval-grid" id="evalGrid"></div>
+        <div class="chart-grid">
+            <div class="chart-card full-width"><h3>📈 特征重要性排名（随机森林模型）</h3><div id="chart-features" class="full-chart-box"></div></div>
+            <div class="chart-card full-width"><h3>🎯 预测效果对比（实际排名 vs 预测排名）</h3><div id="chart-prediction" class="full-chart-box"></div></div>
+        </div>
+    </div>
+    <div id="tab-predict" class="tab-content">
+        <div class="prediction-form" id="predForm"></div>
+        <div id="predResult" class="result-box" style="display:none"></div>
+    </div>
+    <div class="consent">基于Spark的PUBG游戏统计数据分析 · 数据来源: Kaggle PUBG Dataset</div>
+</div>
+<script>
+let analysisData=null, mlData=null;
+async function loadData(){
+    let [ar, mr] = await Promise.all([
+        fetch('/api/analysis').then(r=>r.json()),
+        fetch('/api/ml_results').then(r=>r.json())
+    ]);
+    analysisData=ar; mlData=mr;
+    if(ar?.analysis) renderStats(ar.analysis, ar.stats);
+    if(mr) renderMLEval(mr);
+    renderCharts();
+}
+function switchTab(n){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    let idx = n==='analysis'?0 : n==='ml'?1 : 2;
+    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+    document.getElementById('tab-'+n).classList.add('active');
+    if(n==='predict') buildPredForm();
+}
+function buildPredForm(){
+    let f=[['kills','击杀数',0],['damageDealt','总伤害',0],['walkDistance','步行距离(米)',0],
+           ['rideDistance','载具距离(米)',0],['heals','治疗品数量',0],['boosts','增益品数量',0],
+           ['weaponsAcquired','拾取武器数',0],['killPlace','击杀排名',50],
+           ['DBNOs','击倒数',0],['headshotKills','爆头击杀',0],
+           ['assists','助攻数',0],['revives','扶起队友数',0],['longestKill','最远击杀(米)',0]];
+    document.getElementById('predForm').innerHTML = f.map(([k,l,v])=>
+        '<div class="form-group"><label>'+l+'</label><input type="number" id="pf-'+k+'" value="'+v+'" min="0" step="any"></div>'
+    ).join('')+'<button class="btn-predict" onclick="doPredict()">🎯 估算最终排名百分位</button>';
+}
+async function doPredict(){
+    let ks=['kills','damageDealt','walkDistance','rideDistance','heals','boosts',
+            'weaponsAcquired','killPlace','DBNOs','headshotKills','assists','revives','longestKill'];
+    let p={}; ks.forEach(k=>p[k]=parseFloat(document.getElementById('pf-'+k).value)||0);
+    let r=await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}).then(r=>r.json());
+    let box=document.getElementById('predResult'); box.style.display='block';
+    let pct=(r.predicted_rank*100).toFixed(1);
+    box.innerHTML='<div class="big-num">'+pct+'%</div><div class="desc">估算最终排名百分位：数值越大表示排名越靠前</div>'
+        +'<div style="color:#556677;font-size:12px;margin-top:8px">'+r.confidence+'</div>'
+        +'<div style="margin-top:15px;background:#0f1923;border-radius:6px;padding:10px"><div style="height:8px;background:#2a3a4a;border-radius:4px;overflow:hidden">'
+        +'<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#e94560,#f5a623);border-radius:4px;transition:width .5s"></div></div></div>';
+}
+function renderStats(an, st){
+    let items=[['总样本量',(st?.total_players ?? (an.kills?.distribution||[]).reduce((a,b)=>a+b.count,0)).toLocaleString()],
+               ['平均击杀',an.kills?.avg?.toFixed(2)],['最高击杀',an.kills?.max],
+               ['平均步行距离',an.walk_distance?.avg+'米'],['平均载具距离',an.ride_distance?.avg+'米'],
+               ['平均治疗品',an.items_winrate?.avg_heal],['平均增益品',an.items_winrate?.avg_boost]];
+    document.getElementById('statsGrid').innerHTML=items.map(([l,v])=>'<div class="stat-card"><div class="stat-num">'+v+'</div><div class="stat-label">'+l+'</div></div>').join('');
+}
+function renderMLEval(ml){
+    let models=[{n:'随机森林',d:ml.random_forest},{n:'梯度提升树',d:ml.gbt},{n:'线性回归',d:ml.linear_regression}];
+    let labels={rmse:'RMSE(均方根误差)',mae:'MAE(平均绝对误差)',r2:'R²(决定系数)'};
+    let better={rmse:'越低越好',mae:'越低越好',r2:'越接近1越好'};
+    document.getElementById('evalGrid').innerHTML=models.map(m=>
+        ['rmse','mae','r2'].map(met=>'<div class="eval-card"><div class="eval-model">'+m.n+'</div>'
+            +'<div class="eval-value">'+(m.d?.[met]?.toFixed(4)??'—')+'</div>'
+            +'<div class="eval-label">'+labels[met]+'</div>'
+            +'<div style="color:#556677;font-size:11px">'+better[met]+'</div></div>').join('')).join('');
+}
+function renderCharts(){
+    let an=analysisData?.analysis, ml=mlData;
+    if(!an) return;
+    let t={textStyle:{color:'#8899aa'},tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},grid:{left:60,right:20,bottom:50}};
+    function ec(id,o){let c=echarts.init(document.getElementById(id));c.setOption({backgroundColor:'transparent',animation:true,...o});window.addEventListener('resize',()=>c.resize())}
+    // 击杀分布
+    if(an.kills?.distribution){
+        let d=an.kills.distribution;
+        ec('chart-kills',{...t,xAxis:{data:d.map(r=>r.kills),axisLabel:{color:'#8899aa'}},yAxis:{axisLabel:{color:'#8899aa'}},
+            series:[{type:'bar',data:d.map(r=>r.count),itemStyle:{color:'#e94560'},label:{show:true,position:'top',fontSize:9,color:'#8899aa',formatter:p=>p.value>1000?(p.value/1000).toFixed(1)+'k':p.value}}]});
+    }
+    // 零击杀伤害
+    if(an.zero_kills_damage?.distribution){
+        let d=an.zero_kills_damage.distribution;
+        ec('chart-zero-dmg',{...t,xAxis:{data:d.map(r=>r.range),axisLabel:{color:'#8899aa'}},yAxis:{axisLabel:{color:'#8899aa'}},
+            series:[{type:'bar',data:d.map(r=>r.count),itemStyle:{color:'#0ea5e9'},label:{show:true,position:'top',fontSize:9,color:'#8899aa',formatter:p=>p.value>1000?(p.value/1000).toFixed(1)+'k':p.value}}],
+            title:{text:'零击杀玩家占比: '+an.zero_kills_damage.ratio+'%',textStyle:{color:'#8899aa',fontSize:12},left:'center',top:-2}});
+    }
+    // 步行距离
+    if(an.walk_distance?.distribution){
+        let d=an.walk_distance.distribution;
+        ec('chart-walk',{...t,xAxis:{data:d.map(r=>r.range),axisLabel:{color:'#8899aa',rotate:20}},yAxis:{axisLabel:{color:'#8899aa'}},
+            series:[{type:'bar',data:d.map(r=>r.count),itemStyle:{color:'#10b981'},label:{show:true,position:'top',fontSize:9,color:'#8899aa'}}],
+            grid:{left:60,right:20,bottom:65}});
+    }
+    // 载具距离
+    if(an.ride_distance?.distribution){
+        let d=an.ride_distance.distribution;
+        ec('chart-ride',{...t,xAxis:{data:d.map(r=>r.range),axisLabel:{color:'#8899aa',rotate:20}},yAxis:{axisLabel:{color:'#8899aa'}},
+            series:[{type:'bar',data:d.map(r=>r.count),itemStyle:{color:'#f59e0b'},label:{show:true,position:'top',fontSize:9,color:'#8899aa'}}],
+            grid:{left:60,right:20,bottom:65},
+            title:{text:'无载具玩家: '+an.ride_distance.zero_pct+'%',textStyle:{color:'#8899aa',fontSize:12},left:'center',top:-2}});
+    }
+    // 药品胜率
+    if(an.items_winrate?.heal_win){
+        let h=an.items_winrate.heal_win, b=an.items_winrate.boost_win;
+        ec('chart-items',{...t,tooltip:{trigger:'axis'},grid:{left:60,right:60,bottom:40,top:40},
+            legend:{data:['治疗品','增益品'],textStyle:{color:'#8899aa'},top:0},
+            xAxis:{data:h.map(r=>r.count),axisLabel:{color:'#8899aa'}},
+            yAxis:{axisLabel:{color:'#8899aa'},name:'胜率',nameTextStyle:{color:'#8899aa'}},
+            series:[{name:'治疗品',type:'line',data:h.map(r=>r.win_rate),smooth:true,itemStyle:{color:'#10b981'},areaStyle:{color:'rgba(16,185,129,0.1)'}},
+                    {name:'增益品',type:'line',data:b.map(r=>r.win_rate),smooth:true,itemStyle:{color:'#3b82f6'},areaStyle:{color:'rgba(59,130,246,0.1)'}}]});
+    }
+    // 组队模式
+    if(an.game_modes){
+        let ms=['solo','duo','squad'], lbs={'solo':'单人','duo':'双人','squad':'四人'}, cs={'solo':'#ef4444','duo':'#f59e0b','squad':'#3b82f6'};
+        let mx=Math.max(...ms.map(m=>Math.max(...(an.game_modes[m]?.kill_winrate||[]).map(r=>r.kills||0))));
+        ec('chart-modes',{...t,tooltip:{trigger:'axis'},grid:{left:60,right:60,bottom:40,top:40},
+            legend:{data:['单人','双人','四人'],textStyle:{color:'#8899aa'},top:0},
+            xAxis:{data:Array.from({length:mx+1},(_,i)=>i),axisLabel:{color:'#8899aa'}},
+            yAxis:{axisLabel:{color:'#8899aa'},name:'胜率',nameTextStyle:{color:'#8899aa'}},
+            series:ms.map(m=>({name:lbs[m],type:'line',smooth:true,connectNulls:false,
+                data:Array.from({length:mx+1},(_,k)=>{let i=(an.game_modes[m]?.kill_winrate||[]).find(r=>r.kills===k);return i?i.win_rate:null}),
+                itemStyle:{color:cs[m]},lineStyle:{width:2},areaStyle:{color:cs[m]+'22'}}))});
+    }
+    // 特征重要性
+    if(ml?.feature_importance){
+        let fi=ml.feature_importance.slice(0,15).reverse();
+        let lb={'kills':'击杀数','damageDealt':'总伤害','walkDistance':'步行距离','rideDistance':'载具距离',
+                'heals':'治疗品','boosts':'增益品','weaponsAcquired':'拾取武器','killPlace':'击杀排名',
+                'matchDuration':'比赛时长','numGroups':'队伍数量','DBNOs':'击倒数','headshotKills':'爆头击杀',
+                'assists':'助攻','revives':'扶起队友','longestKill':'最远击杀','swimDistance':'游泳距离','killStreaks':'连杀次数'};
+        ec('chart-features',{...t,tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},grid:{left:120,right:40,bottom:40,top:40},
+            title:{text:'特征重要性排名',textStyle:{color:'#e0e6ed',fontSize:14},left:'center'},
+            xAxis:{axisLabel:{color:'#8899aa'},name:'重要性权重',nameTextStyle:{color:'#8899aa'}},
+            yAxis:{type:'category',data:fi.map(r=>lb[r.feature]||r.feature),axisLabel:{color:'#8899aa',fontSize:11}},
+            series:[{type:'bar',data:fi.map(r=>r.importance),itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#0ea5e9'},{offset:1,color:'#e94560'}])},
+                    label:{show:true,position:'right',fontSize:10,color:'#8899aa',formatter:p=>(p.value*100).toFixed(1)+'%'}}]});
+    }
+    // 预测散点图
+    if(ml?.prediction_samples){
+        let s=ml.prediction_samples;
+        ec('chart-prediction',{...t,tooltip:{trigger:'item',formatter:p=>'实际: '+(p.value[0]*100).toFixed(1)+'%<br/>预测: '+(p.value[1]*100).toFixed(1)+'%'},
+            grid:{left:80,right:40,bottom:50,top:40},
+            xAxis:{axisLabel:{color:'#8899aa'},name:'实际排名百分位',nameTextStyle:{color:'#8899aa'},min:0,max:1},
+            yAxis:{axisLabel:{color:'#8899aa'},name:'预测排名百分位',nameTextStyle:{color:'#8899aa'},min:0,max:1},
+            series:[{type:'scatter',data:s.map(r=>[r.actual,r.predicted]),symbolSize:3,itemStyle:{color:'rgba(233,69,96,0.5)'}},
+                    {type:'line',data:[[0,0],[1,1]],lineStyle:{color:'#10b981',type:'dashed',width:1},symbol:'none',name:'理想线'}]});
+    }
+}
+loadData().then(()=>{
+    renderCharts();
+    let tab=new URLSearchParams(location.search).get('tab');
+    if(tab) switchTab(tab);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Python 3.10+
+pyspark>=3.5,<4
+flask>=3.0,<4
+numpy>=1.26,<3
+pandas>=2.0,<3
